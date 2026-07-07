@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WITNESS-AI | 面談の記憶を、組織の資産へ。</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Inter:wght@300;400;500;600&family=Noto+Sans+JP:wght@300;400;500&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#0a1628;--navy-mid:#112240;--navy-light:#1a3a5c;
+  --gold:#c9a84c;--gold-light:#e8c96e;--gold-dim:rgba(201,168,76,0.12);--gold-border:rgba(201,168,76,0.25);
+  --white:#ffffff;--gray:#8892a4;--gray-light:#c8d0de;
+  --danger:#f87171;--warn:#facc15;--good:#4ade80;--text:#e8edf4;
+}
+html{scroll-behavior:smooth}
+body{background:var(--navy);color:var(--text);font-family:'Noto Sans JP','Inter',sans-serif;font-size:16px;line-height:1.7;overflow-x:hidden;}
+h1,h2,h3,h4{word-break:keep-all;overflow-wrap:break-word;line-break:strict;}
+p,li{word-break:keep-all;line-break:strict;}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:18px 48px;background:rgba(10,22,40,0.9);backdrop-filter:blur(16px);border-bottom:1px solid var(--gold-border);}
+.nav-logo{display:flex;align-items:center;gap:12px;font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;letter-spacing:0.1em;color:var(--white);text-decoration:none;}
+.nav-logo span{color:var(--gold)}
+.nav-links{display:flex;gap:32px;list-style:none}
+.nav-links a{font-size:13px;color:var(--gray-light);text-decoration:none;transition:color 0.2s;}
+.nav-links a:hover{color:var(--gold)}
+.nav-cta{background:var(--gold);color:var(--navy);font-size:13px;font-weight:600;padding:10px 24px;border:none;cursor:pointer;text-decoration:none;border-radius:2px;transition:background 0.2s;}
+.nav-cta:hover{background:var(--gold-light)}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:120px 48px 80px;position:relative;overflow:hidden;}
+.hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 70% 50% at 50% 40%,rgba(201,168,76,0.06) 0%,transparent 60%),radial-gradient(ellipse 40% 40% at 15% 75%,rgba(26,58,92,0.5) 0%,transparent 50%);}
+.hero-grid{
+  display:flex;flex-direction:column;
+  gap:72px;align-items:flex-start;
+  max-width:1100px;margin:0 auto;
+  position:relative;z-index:1;width:100%;
+}
+.hero-eyebrow{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.28em;color:var(--gold);text-transform:uppercase;margin-bottom:20px;display:flex;align-items:center;gap:12px;}
+.hero-eyebrow::before{content:'';display:block;width:28px;height:1px;background:var(--gold);}
+h1.hero-h1{font-family:'Cormorant Garamond',serif;font-size:clamp(36px,4vw,56px);font-weight:300;line-height:1.15;letter-spacing:-0.02em;margin-bottom:16px;}
+h1.hero-h1 em{font-style:italic;color:var(--gold);}
+.hero-targets{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:24px;}
+.hero-target{font-size:12px;color:var(--gold);border:1px solid var(--gold-border);padding:4px 12px;border-radius:20px;background:var(--gold-dim);}
+.hero-sub{font-size:15px;color:var(--gray-light);line-height:2;margin-bottom:32px;font-weight:300;max-width:700px;}
+.hero-sub strong{color:var(--white);font-weight:500;}
+.hero-trust{display:flex;flex-wrap:wrap;gap:16px;margin-bottom:36px;}
+.trust-item{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--gray);font-family:'Space Mono',monospace;letter-spacing:0.06em;}
+.trust-dot{width:6px;height:6px;border-radius:50%;background:var(--good);}
+.hero-actions{display:flex;gap:14px;flex-wrap:wrap;}
+.btn-primary{background:var(--gold);color:var(--navy);font-size:14px;font-weight:600;padding:15px 36px;border:none;cursor:pointer;text-decoration:none;display:inline-block;border-radius:2px;transition:all 0.2s;}
+.btn-primary:hover{background:var(--gold-light);transform:translateY(-1px)}
+.btn-ghost{background:transparent;color:var(--gold);font-size:14px;padding:14px 36px;border:1px solid var(--gold-border);cursor:pointer;text-decoration:none;display:inline-block;border-radius:2px;transition:all 0.2s;}
+.btn-ghost:hover{border-color:var(--gold)}
+
+/* Hero Visual */
+.hero-visual{background:var(--navy-mid);border:1px solid var(--gold-border);border-radius:4px;overflow:hidden;font-size:15px;}
+.hv-topbar{background:rgba(10,22,40,0.95);border-bottom:1px solid var(--gold-border);padding:12px 20px;display:flex;align-items:center;justify-content:space-between;}
+.hv-tabs{display:flex;gap:4px;}
+.hv-tab{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:0.08em;padding:7px 14px;color:var(--gray);border-radius:2px;cursor:default;}
+.hv-tab.active{background:rgba(201,168,76,0.12);color:var(--gold);}
+.hv-indicators{display:flex;gap:16px;}
+.hv-ind{display:flex;align-items:center;gap:5px;font-family:'Space Mono',monospace;font-size:11px;}
+.hv-ind.rec{color:var(--danger);}.hv-ind.ai{color:var(--gold);}.hv-ind.cmp{color:var(--good);}
+.hv-dot{width:6px;height:6px;border-radius:50%;animation:pulse 1.2s infinite;}
+.hv-dot.r{background:var(--danger);}.hv-dot.g{background:var(--gold);}.hv-dot.gr{background:var(--good);}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.3;}}
+.hv-search{padding:14px 20px;border-bottom:1px solid rgba(201,168,76,0.08);display:flex;align-items:center;gap:8px;}
+.hv-search-box{flex:1;background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.15);border-radius:2px;padding:10px 14px;font-size:14px;color:var(--gray-light);display:flex;align-items:center;gap:8px;}
+.hv-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:rgba(201,168,76,0.1);border-bottom:1px solid rgba(201,168,76,0.1);}
+.hv-stat{background:var(--navy-mid);padding:16px 20px;text-align:center;}
+.hv-stat-num{font-family:'Cormorant Garamond',serif;font-size:28px;color:var(--gold);line-height:1;}
+.hv-stat-label{font-size:12px;color:var(--gray);margin-top:4px;font-family:'Space Mono',monospace;letter-spacing:0.05em;}
+.hv-head{background:rgba(201,168,76,0.06);border-bottom:1px solid var(--gold-border);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;}
+.hv-title{font-family:'Space Mono',monospace;font-size:12px;letter-spacing:0.1em;color:var(--gold);}
+.hv-ai-badge{font-size:12px;color:var(--gold);background:rgba(201,168,76,0.1);border:1px solid var(--gold-border);padding:4px 12px;border-radius:2px;}
+.timeline{padding:16px 20px;}
+.tl-item{display:flex;gap:16px;padding:16px 0;border-bottom:1px solid rgba(201,168,76,0.07);}
+.tl-item:last-child{border-bottom:none;}
+.tl-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;margin-top:5px;}
+.tl-dot.red{background:var(--danger);}.tl-dot.yellow{background:var(--warn);}.tl-dot.green{background:var(--good);}
+.tl-meta{font-family:'Space Mono',monospace;font-size:11px;color:var(--gray);margin-bottom:4px;}
+.tl-text{font-size:14px;color:var(--gray-light);line-height:1.6;}
+.tl-tag{display:inline-block;margin-top:6px;font-size:12px;padding:3px 10px;border-radius:2px;}
+.tag-d{background:rgba(248,113,113,0.1);color:var(--danger);}
+.tag-w{background:rgba(250,204,21,0.1);color:var(--warn);}
+.tag-g{background:rgba(74,222,128,0.1);color:var(--good);}
+.hv-footer{padding:14px 20px;background:rgba(201,168,76,0.04);border-top:1px solid var(--gold-border);font-size:13px;color:var(--gold);font-family:'Space Mono',monospace;letter-spacing:0.06em;}
+
+/* SECTIONS */
+.section{padding:100px 48px}
+.container{max-width:1100px;margin:0 auto}
+.section-label{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:0.25em;color:var(--gold);text-transform:uppercase;margin-bottom:14px;}
+h2.sh{font-family:'Cormorant Garamond',serif;font-size:clamp(30px,3.8vw,48px);font-weight:300;line-height:1.25;letter-spacing:-0.01em;margin-bottom:14px;}
+h2.sh em{font-style:italic;color:var(--gold);}
+.section-lead{font-size:15px;color:var(--gray-light);max-width:560px;line-height:1.9;font-weight:300;margin-bottom:52px;}
+
+/* PROBLEM */
+.problem-bg{background:var(--navy)}
+.problem-cards{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--gold-border);border:1px solid var(--gold-border);margin-top:44px;}
+@media(max-width:700px){.problem-cards{grid-template-columns:1fr}}
+.pc{background:var(--navy-mid);padding:44px 36px;}
+.pc-num{font-family:'Noto Sans JP',sans-serif;font-size:48px;font-weight:300;color:var(--gold);line-height:1;margin-bottom:18px;}
+.pc h3{font-size:19px;font-weight:500;margin-bottom:10px;color:var(--white);}
+.pc p{font-size:14px;color:var(--gray-light);line-height:1.85;}
+.pc-quote{margin-top:14px;padding:10px 14px;background:rgba(248,113,113,0.06);border-left:2px solid var(--danger);font-size:13px;color:var(--gray-light);font-style:italic;line-height:1.6;}
+
+/* KEY FEATURE */
+.kf-bg{background:var(--navy-mid)}
+.kf-layout{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center;margin-top:48px;}
+@media(max-width:900px){.kf-layout{grid-template-columns:1fr}}
+.kf-text p{font-size:15px;color:var(--gray-light);line-height:1.9;margin-bottom:18px;font-weight:300;}
+.kf-point{display:flex;gap:14px;align-items:flex-start;margin-bottom:18px;}
+.kf-icon{width:36px;height:36px;flex-shrink:0;background:var(--gold-dim);border:1px solid var(--gold-border);border-radius:2px;display:flex;align-items:center;justify-content:center;font-size:16px;}
+.kf-point-body h4{font-size:15px;font-weight:500;margin-bottom:3px;}
+.kf-point-body p{font-size:13px;color:var(--gray);line-height:1.7;}
+.hist-visual{background:var(--navy);border:1px solid var(--gold-border);border-radius:4px;overflow:hidden;}
+.hist-head{padding:11px 16px;border-bottom:1px solid var(--gold-border);display:flex;align-items:center;gap:8px;}
+.hist-emp{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.1em;color:var(--gold);}
+.hist-name{font-size:13px;color:var(--gray-light);}
+.hist-item{padding:12px 16px;border-bottom:1px solid rgba(201,168,76,0.07);}
+.hist-item:last-child{border-bottom:none;}
+.hist-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;}
+.hist-date{font-family:'Space Mono',monospace;font-size:9px;color:var(--gray);}
+.hist-emo{font-size:10px;padding:2px 7px;border-radius:2px;}
+.hist-title{font-size:13px;color:var(--gray-light);margin-bottom:3px;}
+.hist-sum{font-size:12px;color:var(--gray);line-height:1.5;}
+.hist-action{margin-top:7px;padding:7px 10px;background:rgba(26,58,92,0.5);border-radius:2px;font-size:11px;color:var(--gray-light);line-height:1.6;border-left:2px solid var(--gold-border);}
+
+/* FEATURES */
+.feat-bg{background:var(--navy)}
+.features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--gold-border);border:1px solid var(--gold-border);margin-top:44px;}
+@media(max-width:900px){.features-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.features-grid{grid-template-columns:1fr}}
+.feat{background:var(--navy);padding:36px 28px;transition:background 0.3s;}
+.feat:hover{background:var(--navy-mid)}
+.feat.primary{background:rgba(17,34,64,0.95);border-top:2px solid var(--gold);position:relative;}
+.feat.primary::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(201,168,76,0.05) 0%,transparent 60%);pointer-events:none;}
+.feat-icon{width:44px;height:44px;margin-bottom:16px;background:var(--gold-dim);border:1px solid var(--gold-border);display:flex;align-items:center;justify-content:center;font-size:20px;border-radius:2px;}
+.feat.primary .feat-icon{background:rgba(201,168,76,0.18);border-color:var(--gold);}
+.feat h3{font-size:17px;font-weight:500;margin-bottom:8px;line-height:1.4;}
+.feat p{font-size:13px;color:var(--gray);line-height:1.75;}
+.feat-badge{display:inline-block;margin-top:14px;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.1em;color:var(--navy);background:var(--gold);border:1px solid var(--gold);padding:4px 12px;font-weight:700;}
+.feat.sub .feat-badge-sm{display:inline-block;margin-top:10px;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:0.08em;color:var(--gray);border:1px solid rgba(201,168,76,0.2);padding:2px 8px;}
+
+/* COMPARISON */
+.comp-bg{background:var(--navy-mid)}
+.comp-table-wrap{margin-top:44px;overflow-x:auto;}
+table.comp{width:100%;border-collapse:collapse;}
+table.comp th{padding:14px 20px;text-align:left;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.1em;color:var(--gold);background:var(--navy-mid);border-bottom:1px solid var(--gold-border);}
+table.comp th.hl{background:rgba(201,168,76,0.1);border-bottom:2px solid var(--gold);}
+table.comp td{padding:13px 20px;font-size:13px;border-bottom:1px solid rgba(201,168,76,0.07);color:var(--gray);}
+table.comp td.feat-col{color:var(--gray-light);}
+table.comp td.hl{background:rgba(201,168,76,0.04);}
+table.comp tr:last-child td{border-bottom:none;}
+.only-badge{display:inline-block;background:var(--gold);color:var(--navy);font-family:'Space Mono',monospace;font-size:9px;font-weight:700;letter-spacing:0.1em;padding:4px 10px;border-radius:2px;white-space:nowrap;}
+.yes{color:var(--good);font-weight:500;}
+.no{color:rgba(255,255,255,0.15);}
+
+/* BEFORE/AFTER */
+.ba-bg{background:var(--navy)}
+.ba-grid{display:grid;grid-template-columns:1fr auto 1fr;align-items:stretch;margin-top:44px;border:1px solid var(--gold-border);}
+@media(max-width:700px){.ba-grid{grid-template-columns:1fr;}.ba-arrow{display:none;}}
+.ba-col{padding:40px 36px;}
+.ba-col.before{background:rgba(248,113,113,0.04);border-right:1px solid var(--gold-border);}
+.ba-col.after{background:rgba(74,222,128,0.03);}
+.ba-arrow{display:flex;align-items:center;justify-content:center;padding:0 20px;background:var(--navy-mid);}
+.ba-arrow-icon{font-size:24px;color:var(--gold);}
+.ba-label{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.15em;margin-bottom:20px;display:flex;align-items:center;gap:8px;}
+.ba-label.before-label{color:var(--danger);}
+.ba-label.after-label{color:var(--good);}
+.ba-items{list-style:none;display:flex;flex-direction:column;gap:12px;}
+.ba-items li{display:flex;align-items:flex-start;gap:10px;font-size:14px;line-height:1.6;}
+.ba-col.before .ba-items li{color:var(--gray);}
+.ba-col.before .ba-items li::before{content:'✗';color:var(--danger);flex-shrink:0;font-weight:700;}
+.ba-col.after .ba-items li{color:var(--gray-light);}
+.ba-col.after .ba-items li::before{content:'✓';color:var(--good);flex-shrink:0;font-weight:700;}
+
+/* ROI */
+.roi-bg{background:var(--navy-mid)}
+.roi-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--gold-border);border:1px solid var(--gold-border);margin-top:44px;}
+@media(max-width:700px){.roi-grid{grid-template-columns:1fr}}
+.roi-item{background:var(--navy-mid);padding:32px 28px;display:flex;align-items:flex-start;gap:18px;}
+.roi-icon{font-size:26px;flex-shrink:0;width:50px;height:50px;background:var(--gold-dim);border:1px solid var(--gold-border);border-radius:2px;display:flex;align-items:center;justify-content:center;}
+.roi-body h3{font-size:15px;font-weight:500;margin-bottom:6px;color:var(--gold);}
+.roi-body p{font-size:13px;color:var(--gray-light);line-height:1.7;}
+.roi-num{font-family:'Noto Sans JP',sans-serif;font-size:24px;color:var(--gold);font-weight:400;line-height:1;margin-bottom:4px;}
+
+/* PRICING INTRO */
+.pricing-intro{background:var(--navy);padding:60px 48px 0;}
+.pricing-intro-inner{max-width:600px;margin:0 auto;text-align:center;}
+.pricing-intro-inner p{font-size:18px;color:var(--gray-light);line-height:2;font-weight:300;}
+.pricing-intro-inner strong{color:var(--gold);font-weight:500;}
+
+/* PRICING */
+.pricing-bg{background:var(--navy);padding:40px 48px 100px;}
+.pricing-wrap{max-width:540px;margin:44px auto 0;background:var(--navy-mid);border:1px solid var(--gold-border);position:relative;overflow:hidden;}
+.pricing-wrap::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--navy),var(--gold),var(--navy));}
+.price-head{padding:36px 40px 24px;border-bottom:1px solid var(--gold-border);}
+.price-label{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:0.2em;color:var(--gold);margin-bottom:8px;}
+.price-name{font-family:'Noto Sans JP',sans-serif;font-size:22px;font-weight:400;margin-bottom:18px;}
+.price-row-amount{display:flex;align-items:baseline;gap:8px;margin-bottom:4px;}
+.price-strike{font-family:'Noto Sans JP',sans-serif;font-size:20px;color:var(--gray);text-decoration:line-through;font-weight:300;}
+.price-main{font-family:'Noto Sans JP',sans-serif;font-size:48px;font-weight:300;color:var(--gold);line-height:1;}
+.price-unit{font-size:13px;color:var(--gray);font-family:'Noto Sans JP',sans-serif;}
+.price-note{font-size:12px;color:var(--gray);margin-top:4px;}
+.price-initial{font-size:13px;color:var(--gray-light);margin-top:14px;padding-top:14px;border-top:1px solid var(--gold-border);}
+.price-initial strong{color:var(--gold);}
+.price-feats{padding:22px 40px 36px;}
+.price-feats ul{list-style:none;display:flex;flex-direction:column;gap:10px;}
+.price-feats li{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--gray-light);}
+.price-feats li::before{content:'✓';color:var(--gold);font-weight:700;flex-shrink:0;}
+.pricing-cta{margin:0 40px 40px;display:block;text-align:center;background:var(--gold);color:var(--navy);font-size:14px;font-weight:600;padding:16px;text-decoration:none;border-radius:2px;transition:background 0.2s;}
+.pricing-cta:hover{background:var(--gold-light)}
+
+/* HOW */
+.how-bg{background:var(--navy-mid)}
+.steps-row{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin-top:44px;position:relative;}
+.steps-row::before{content:'';position:absolute;top:27px;left:12%;right:12%;height:1px;background:linear-gradient(90deg,transparent,var(--gold-border),var(--gold-border),transparent);}
+@media(max-width:700px){.steps-row{grid-template-columns:1fr 1fr;}.steps-row::before{display:none;}}
+.step-item{text-align:center;padding:0 16px;position:relative;z-index:1;}
+.step-circle{width:54px;height:54px;border-radius:50%;background:var(--navy-mid);border:1px solid var(--gold);margin:0 auto 16px;display:flex;align-items:center;justify-content:center;font-family:'Noto Sans JP',sans-serif;font-size:18px;font-weight:400;color:var(--gold);}
+.step-item h3{font-size:14px;font-weight:500;margin-bottom:6px;}
+.step-item p{font-size:12px;color:var(--gray);line-height:1.7;}
+
+/* CTA */
+.cta-bg{padding:120px 48px;text-align:center;background:var(--navy-mid);position:relative;overflow:hidden;}
+.cta-bg::before{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:600px;height:600px;background:radial-gradient(circle,rgba(201,168,76,0.06) 0%,transparent 70%);pointer-events:none;}
+.cta-inner{position:relative;z-index:1;}
+.cta-bg h2{margin-bottom:14px;}
+.cta-main{font-size:18px;color:var(--white);max-width:520px;margin:0 auto 10px;line-height:1.8;font-weight:300;}
+.cta-sub{font-size:14px;color:var(--gray);max-width:440px;margin:0 auto 36px;line-height:1.8;}
+.cta-actions{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;}
+
+/* FOOTER */
+footer{background:var(--navy);border-top:1px solid var(--gold-border);padding:40px 48px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px;}
+.footer-logo{font-family:'Cormorant Garamond',serif;font-size:18px;color:var(--white);letter-spacing:0.08em;}
+.footer-logo span{color:var(--gold);}
+.footer-info{font-size:12px;color:var(--gray);line-height:1.9;text-align:right;}
+.footer-copy{font-size:10px;color:var(--gray);border-top:1px solid var(--gold-border);padding-top:18px;margin-top:18px;text-align:center;width:100%;font-family:'Space Mono',monospace;letter-spacing:0.08em;}
+.reveal{opacity:0;transform:translateY(20px);transition:opacity 0.7s ease,transform 0.7s ease;}
+.reveal.visible{opacity:1;transform:translateY(0);}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">
+    <svg width="28" height="28" viewBox="0 0 40 40" fill="none">
+      <circle cx="20" cy="20" r="3" fill="#c9a84c"/>
+      <ellipse cx="20" cy="20" rx="16" ry="7" stroke="#c9a84c" stroke-width="1" fill="none" opacity="0.6"/>
+      <ellipse cx="20" cy="20" rx="16" ry="7" stroke="#c9a84c" stroke-width="1" fill="none" opacity="0.6" transform="rotate(60 20 20)"/>
+      <ellipse cx="20" cy="20" rx="16" ry="7" stroke="#c9a84c" stroke-width="1" fill="none" opacity="0.6" transform="rotate(120 20 20)"/>
+    </svg>
+    WITNESS<span>-AI</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#problem">課題</a></li>
+    <li><a href="#features">機能</a></li>
+    <li><a href="#pricing">料金</a></li>
+  </ul>
+  <a href="#contact" class="nav-cta">デモを申し込む</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid">
+    <div class="hero-text">
+      <p class="hero-eyebrow">HR Interview Intelligence</p>
+      <h1 class="hero-h1">面談の記憶を、<em>組織の資産へ。</em></h1>
+      <p style="font-size:14px;color:var(--gold);font-weight:400;letter-spacing:0.02em;margin-bottom:20px;line-height:1.8;border-left:2px solid var(--gold);padding-left:14px;">人事・1on1・評価面談をAIで記録・分析し、<br>面談品質と人材定着を向上させるHR面談プラットフォーム</p>
+      <div class="hero-targets">
+        <span class="hero-target">人事部門</span>
+        <span class="hero-target">経営者・管理職</span>
+        <span class="hero-target">店舗責任者</span>
+        <span class="hero-target">1on1を実施するマネージャー</span>
+      </div>
+      <p class="hero-sub">
+        面談に集中できるから、<strong>相手の本音を引き出せます。</strong><br>
+        記録が蓄積されるから、<strong>離職の兆候を見逃しません。</strong><br>
+        前回が引き継がれるから、<strong>面談が組織の力になります。</strong>
+      </p>
+      <div class="hero-trust">
+        <span class="trust-item"><span class="trust-dot"></span>Azure Speech 採用</span>
+        <span class="trust-item"><span class="trust-dot"></span>Claude AI 採用</span>
+        <span class="trust-item"><span class="trust-dot"></span>国内サーバー保存</span>
+        <span class="trust-item"><span class="trust-dot"></span>改ざん防止対応</span>
+      </div>
+      <div class="hero-actions">
+        <a href="#contact" class="btn-primary">無料デモを申し込む</a>
+        <a href="#features" class="btn-ghost">機能を見る</a>
+      </div>
+      <p style="font-size:12px;color:var(--gray);margin-top:14px;margin-bottom:16px;letter-spacing:0.04em;">約30分・オンライン対応・営業担当がご説明します</p>
+    </div>
+    <div class="hero-visual reveal" style="width:100%;">
+      <div class="hv-topbar">
+        <div class="hv-tabs">
+          <span class="hv-tab active">面談管理</span>
+          <span class="hv-tab">感情分析</span>
+          <span class="hv-tab">レポート</span>
+        </div>
+        <div class="hv-indicators">
+          <span class="hv-ind rec"><span class="hv-dot r"></span>REC 00:18</span>
+          <span class="hv-ind ai"><span class="hv-dot g"></span>AI分析中</span>
+          <span class="hv-ind cmp"><span class="hv-dot gr"></span>前回と比較中</span>
+        </div>
+      </div>
+      <div class="hv-search">
+        <div class="hv-search-box">🔍 <span style="color:var(--gray);">社員名・番号で検索...</span></div>
+        <div style="font-family:'Space Mono',monospace;font-size:9px;color:var(--gray);white-space:nowrap;margin-left:8px;">E-1042 ▾</div>
+      </div>
+      <div class="hv-head">
+        <span class="hv-title">田中 花子（E-1042）— 面談履歴</span>
+        <span class="hv-ai-badge">感情スコア分析中</span>
+      </div>
+      <div class="timeline">
+        <div class="tl-item">
+          <div class="tl-dot red"></div>
+          <div><div class="tl-meta">2026年4月14日 ｜ 人事面談</div><div class="tl-text">業務量の増加により限界感を訴え。人員補充を強く希望。</div><span class="tl-tag tag-d">⚠ 高ストレス（推定）</span></div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot yellow"></div>
+          <div><div class="tl-meta">2026年1月20日 ｜ 人事面談</div><div class="tl-text">繁忙期の疲労を訴えるも改善の兆し。意欲は維持。</div><span class="tl-tag tag-w">▲ 注意（推定）</span></div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot green"></div>
+          <div><div class="tl-meta">2025年10月8日 ｜ 人事面談</div><div class="tl-text">新プロジェクトに意欲的。チームからの評価も高い。</div><span class="tl-tag tag-g">💚 ポジティブ（推定）</span></div>
+        </div>
+      </div>
+      <div class="hv-footer">📌 前回アクション：人員補充申請・今週中に回答予定</div>
+    </div>
+  </div>
+</section>
+
+<!-- PROBLEM -->
+<section class="section problem-bg" id="problem">
+  <div class="container">
+    <p class="section-label reveal">The Problem</p>
+    <h2 class="sh reveal">面談が、<em>活かされていない。</em></h2>
+    <div class="problem-cards reveal">
+      <div class="pc">
+        <div class="pc-num">01</div>
+        <h3>記録されない</h3>
+        <p>メモを取りながら傾聴することは難しく、重要な発言は記憶から消えていきます。次の面談では、また最初から始まる。</p>
+        <div class="pc-quote">「前回、何を話したっけ…」</div>
+      </div>
+      <div class="pc">
+        <div class="pc-num">02</div>
+        <h3>活用されない</h3>
+        <p>約束した改善・アクション・本人の希望。次回面談に引き継がれず、同じ問題が繰り返されます。面談が、点のままで終わる。</p>
+        <div class="pc-quote">「改善できていますか？」——確認できない</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- KEY FEATURE -->
+<section class="section kf-bg" id="keyfeature">
+  <div class="container">
+    <p class="section-label reveal">What Makes Us Different</p>
+    <h2 class="sh reveal">面談の<em>記憶</em>が、組織の力になる。</h2>
+    <div class="kf-layout">
+      <div class="kf-text reveal">
+        <p>WITNESS-AIは、面談の記録を蓄積し続けます。一人ひとりの感情の変化・未解決の課題・約束事項が次回面談へ自動で引き継がれ、面談が「点」ではなく「線」になります。</p>
+        <div class="kf-point">
+          <div class="kf-icon">📋</div>
+          <div class="kf-point-body">
+            <h4>「前回の続き」から始まるから、深い対話ができる</h4>
+            <p>過去の履歴・感情推移・未解決事項が録音開始と同時に表示されます。</p>
+          </div>
+        </div>
+        <div class="kf-point">
+          <div class="kf-icon">📈</div>
+          <div class="kf-point-body">
+            <h4>感情の変化を追跡するから、離職を防げる</h4>
+            <p>毎回の感情スコアが蓄積され、ストレスの増減を時系列で把握できます。</p>
+          </div>
+        </div>
+        <div class="kf-point">
+          <div class="kf-icon">🏢</div>
+          <div class="kf-point-body">
+            <h4>面談に集中できるから、本音を引き出せる</h4>
+            <p>月50時間録音・AI自動議事録。メモの心配なく、相手の言葉に向き合えます。</p>
+          </div>
+        </div>
+      </div>
+      <div class="hist-visual reveal">
+        <div class="hist-head">
+          <span class="hist-emp">E-1042</span>
+          <span style="color:var(--gold-border);margin:0 6px;">|</span>
+          <span class="hist-name">田中 花子 さんの面談履歴</span>
+        </div>
+        <div class="hist-item">
+          <div class="hist-row"><span class="hist-date">2026 / 04 / 14</span><span class="hist-emo tag-d">高ストレス（推定）</span></div>
+          <div class="hist-title">人事面談 — 2026年度 上期</div>
+          <div class="hist-sum">業務量の増加により限界感を訴え。人員補充を希望。</div>
+          <div class="hist-action">📌 前回アクション：上長へ人員補充を申請・今週中に回答予定</div>
+        </div>
+        <div class="hist-item">
+          <div class="hist-row"><span class="hist-date">2026 / 01 / 20</span><span class="hist-emo tag-w">注意（推定）</span></div>
+          <div class="hist-title">人事面談 — 2025年度 下期</div>
+          <div class="hist-sum">繁忙期の疲労を訴えるも改善の兆し。意欲は維持。</div>
+        </div>
+        <div class="hist-item">
+          <div class="hist-row"><span class="hist-date">2025 / 10 / 08</span><span class="hist-emo tag-g">ポジティブ（推定）</span></div>
+          <div class="hist-title">人事面談 — 2025年度 上期</div>
+          <div class="hist-sum">新プロジェクトに意欲的。チームからの評価も高い。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="section feat-bg" id="features">
+  <div class="container">
+    <p class="section-label reveal">Features</p>
+    <h2 class="sh reveal">他にない、<em><span style="font-family:'Noto Sans JP',sans-serif;font-style:normal;">3</span>つの独自技術。</em></h2>
+    <div class="features-grid reveal">
+      <div class="feat primary">
+        <div class="feat-icon">💬</div>
+        <p style="font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.12em;color:var(--gold);margin-bottom:8px;">AI感情分析エンジン</p>
+        <h3>離職の兆候を早期に発見</h3>
+        <p>発言内容の語彙・文脈からポジティブ・ネガティブの割合をAIが分析。「大丈夫です」と言いながら限界を迎えている社員を、データで見つけます。</p>
+        <span class="feat-badge">WITNESS-AI独自機能</span>
+      </div>
+      <div class="feat primary">
+        <div class="feat-icon">🔒</div>
+        <p style="font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.12em;color:var(--gold);margin-bottom:8px;">改ざん防止アーカイブ</p>
+        <h3>労務トラブルから会社を守る</h3>
+        <p>文字起こし原文をDBトリガーで保護し、変更不可能な状態で永久保存。ハラスメント・不当解雇の申告時に、客観的な証拠として機能します。</p>
+        <span class="feat-badge">WITNESS-AI独自機能</span>
+      </div>
+      <div class="feat primary">
+        <div class="feat-icon">🔗</div>
+        <p style="font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.12em;color:var(--gold);margin-bottom:8px;">面談メモリーAI</p>
+        <h3>毎回「前回の続き」から始まる面談へ</h3>
+        <p>過去の記録・感情の変化・前回の約束事項をリアルタイムで参照しながら面談ができます。引き継ぎ漏れ・言った言わないをなくします。</p>
+        <span class="feat-badge">WITNESS-AI独自機能</span>
+      </div>
+      <div class="feat sub">
+        <div class="feat-icon">📄</div>
+        <h3>議事録作成に費やす時間を取り戻す</h3>
+        <p>面談終了後すぐにPDFが自動生成されます。これまで30〜60分かかっていた議事録作成が<strong style="color:var(--gold);">約80%削減</strong>されます。</p>
+        <span class="feat-badge-sm">SMART</span>
+      </div>
+      <div class="feat sub">
+        <div class="feat-icon">⏸</div>
+        <h3>長時間の面談でも、要点を逃さない</h3>
+        <p>ワンタップで前半の要点・決定事項・アクションを確認。休憩中に整理してから後半へ進める前半まとめ機能を搭載しています。</p>
+        <span class="feat-badge-sm">NEW</span>
+      </div>
+      <div class="feat sub">
+        <div class="feat-icon">🔍</div>
+        <h3>必要な情報を数秒で見つけ、引き継ぎ漏れを防ぐ</h3>
+        <p>全面談記録をキーワードで即検索。「ストレス」「辞めたい」が過去に出現した面談を瞬時に特定し、組織の課題を把握できます。</p>
+        <span class="feat-badge-sm">POWERFUL</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COMPARISON -->
+<section class="section comp-bg">
+  <div class="container">
+    <p class="section-label reveal">Competitive Comparison</p>
+    <h2 class="sh reveal">汎用ツールとの<em>決定的な違い。</em></h2>
+    <p class="section-lead reveal">Notta・Firefliesなどは「文字起こし」ツールです。WITNESS-AIは「面談を組織の資産に変える」ために設計されています。</p>
+    <div class="comp-table-wrap reveal">
+      <table class="comp">
+        <thead>
+          <tr>
+            <th>できること</th>
+            <th class="hl">WITNESS-AI</th>
+            <th>Notta</th>
+            <th>Fireflies</th>
+            <th>tl;dv</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="feat-col">面談中に過去記録をリアルタイム参照</td>
+            <td class="hl"><span class="only-badge">ONLY</span></td>
+            <td class="no">—</td><td class="no">—</td><td class="no">—</td>
+          </tr>
+          <tr>
+            <td class="feat-col">感情分析・離職兆候の検出</td>
+            <td class="hl"><span class="only-badge">ONLY</span></td>
+            <td class="no">—</td><td class="no">—</td><td class="no">—</td>
+          </tr>
+          <tr>
+            <td class="feat-col">改ざん防止・労務証拠としての原文保存</td>
+            <td class="hl"><span class="only-badge">ONLY</span></td>
+            <td class="no">—</td><td class="no">—</td><td class="no">—</td>
+          </tr>
+          <tr>
+            <td class="feat-col">HR・面談に特化した設計</td>
+            <td class="hl yes">◯</td>
+            <td class="no">汎用</td><td class="no">汎用</td><td class="no">汎用</td>
+          </tr>
+          <tr>
+            <td class="feat-col">国内サーバー保存（東京）</td>
+            <td class="hl yes">◯</td>
+            <td class="yes">◯</td><td class="no">—</td><td class="no">—</td>
+          </tr>
+          <tr>
+            <td class="feat-col">管理者の閲覧・フラグ確認</td>
+            <td class="hl yes">◯</td>
+            <td class="no">—</td><td class="no">—</td><td class="no">—</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- BEFORE / AFTER -->
+<section class="section ba-bg">
+  <div class="container">
+    <p class="section-label reveal">Before → After</p>
+    <h2 class="sh reveal">導入前と導入後で、<em>何が変わるか。</em></h2>
+    <div class="ba-grid reveal">
+      <div class="ba-col before">
+        <div class="ba-label before-label">✗ BEFORE — 導入前</div>
+        <ul class="ba-items">
+          <li>面談内容を覚えていない</li>
+          <li>引き継ぎができない</li>
+          <li>離職兆候が見えない</li>
+          <li>議事録作成に時間がかかる</li>
+          <li>面談の質が担当者によって異なる</li>
+        </ul>
+      </div>
+      <div class="ba-arrow"><div class="ba-arrow-icon">→</div></div>
+      <div class="ba-col after">
+        <div class="ba-label after-label">✓ AFTER — 導入後</div>
+        <ul class="ba-items">
+          <li>前回の続きから面談を開始できる</li>
+          <li>AIが履歴・アクションを自動表示する</li>
+          <li>離職兆候をデータで可視化できる</li>
+          <li>議事録を自動生成・PDF化できる</li>
+          <li>面談品質を組織全体で標準化できる</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ROI -->
+<section class="section roi-bg" id="roi">
+  <div class="container">
+    <p class="section-label reveal">ROI</p>
+    <h2 class="sh reveal"><em>AIが変えるのは、</em>面談ではなく組織です。</h2>
+    <div class="roi-grid reveal">
+      <div class="roi-item">
+        <div class="roi-icon">🚨</div>
+        <div class="roi-body">
+          <div class="roi-num">早期発見</div>
+          <h3>離職リスクを事前に察知できる</h3>
+          <p>感情スコアの変化をAIが蓄積・比較。「大丈夫です」と言いながら追い詰められている社員を、データで早期に把握できます。</p>
+        </div>
+      </div>
+      <div class="roi-item">
+        <div class="roi-icon">⏱</div>
+        <div class="roi-body">
+          <div class="roi-num">約80%</div>
+          <h3>面談議事録の作成時間を取り戻せる</h3>
+          <p>録音終了後すぐにPDFが自動生成。1回の面談で節約できる30〜60分を、本来の業務に使えます。</p>
+        </div>
+      </div>
+      <div class="roi-item">
+        <div class="roi-icon">📊</div>
+        <div class="roi-body">
+          <div class="roi-num">均一化</div>
+          <h3>面談品質が、担当者に左右されない</h3>
+          <p>会社が設定したヒアリング項目で全員が同じ視点で面談を実施。組織全体の面談品質が底上げされます。</p>
+        </div>
+      </div>
+      <div class="roi-item">
+        <div class="roi-icon">🏛</div>
+        <div class="roi-body">
+          <div class="roi-num">永久蓄積</div>
+          <h3>面談履歴が、組織の資産になる</h3>
+          <p>蓄積された面談記録は、人材育成・評価・労務対応のための恒久的な組織資産として活用できます。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW -->
+<section class="section how-bg">
+  <div class="container">
+    <p class="section-label reveal">How It Works</p>
+    <h2 class="sh reveal">面談当日、<em><span style="font-family:'Noto Sans JP',sans-serif;font-style:normal;">4</span>ステップで完結。</em></h2>
+    <div class="steps-row reveal">
+      <div class="step-item">
+        <div class="step-circle">1</div>
+        <h3>録音開始</h3>
+        <p>過去履歴が自動表示。前回の続きから始められます。</p>
+      </div>
+      <div class="step-item">
+        <div class="step-circle">2</div>
+        <h3>面談に集中</h3>
+        <p>メモ不要。月50時間録音対応。相手の言葉に向き合えます。</p>
+      </div>
+      <div class="step-item">
+        <div class="step-circle">3</div>
+        <h3>AI が自動分析</h3>
+        <p>文字起こし・感情分析・議事録が自動完成します。</p>
+      </div>
+      <div class="step-item">
+        <div class="step-circle">4</div>
+        <h3>組織の資産になる</h3>
+        <p>記録が蓄積され、次の面談に引き継がれます。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING INTRO -->
+<div class="pricing-intro">
+  <div class="pricing-intro-inner reveal">
+    <p>WITNESS-AIは<strong>議事録作成ツールではありません。</strong><br>人材定着・面談品質向上・労務リスク低減を実現する、<strong>HR面談プラットフォーム</strong>です。</p>
+  </div>
+</div>
+
+<!-- PRICING -->
+<section class="pricing-bg" id="pricing">
+  <div class="container" style="text-align:center;">
+    <p class="section-label reveal">Pricing</p>
+    <h2 class="sh reveal">シンプルな<em><span style="font-family:'Noto Sans JP',sans-serif;font-style:normal;">1</span>アカウント制。</em></h2>
+    <div class="pricing-wrap reveal">
+      <div class="price-head">
+        <p class="price-label">STANDARD PLAN</p>
+        <p class="price-name">スタンダードプラン</p>
+        <div class="price-row-amount">
+          <span class="price-strike">¥35,000</span>
+          <span class="price-main">¥28,000</span>
+          <span class="price-unit">/ 月（税別）</span>
+        </div>
+        <p class="price-note">20% OFF ｜ Azure Speech・Claude API利用料込み ｜ 月50時間録音</p>
+        <div class="price-initial">初期費用 <strong>¥50,000</strong>（税込）— セットアップ・Jabraマイク・導入レクチャー・マニュアル込み</div>
+        <div style="margin-top:10px;padding:8px 14px;background:rgba(74,222,128,0.06);border:1px solid rgba(74,222,128,0.2);border-radius:2px;font-size:12px;color:#4ade80;text-align:center;letter-spacing:0.04em;">✓ 導入企業向けサポート込み</div>
+      </div>
+      <div class="price-feats">
+        <ul>
+          <li>離職兆候の早期発見（感情分析・本音検出）</li>
+          <li>労務トラブル対応（改ざん防止・原文永久保存）</li>
+          <li>面談の継続性管理（過去記録リアルタイム参照）</li>
+          <li>議事録作成時間 約80%削減（PDF自動生成）</li>
+          <li>前半まとめ・横断検索・Zoom録画対応</li>
+          <li>導入後サポート（メール）</li>
+        </ul>
+      </div>
+      <a href="#contact" class="pricing-cta">デモを申し込む →</a>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-bg" id="contact">
+  <div class="container">
+    <div class="cta-inner">
+      <p class="section-label reveal">Contact</p>
+      <h2 class="sh reveal">まず、<em>デモで体験</em>を。</h2>
+      <p class="cta-main reveal">約30分で、あなたの会社の面談がどう変わるかをご体験いただけます。</p>
+      <p class="cta-sub reveal">導入前のご質問・セキュリティに関するご相談もお気軽にお問い合わせください。</p>
+      <div class="cta-actions reveal">
+        <a href="mailto:demo@trust-link-ptnr.com" class="btn-primary">無料デモを申し込む</a>
+        <a href="mailto:info@trust-link-ptnr.com" class="btn-ghost">お問い合わせ</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div>
+    <div class="footer-logo">WITNESS<span>-AI</span></div>
+    <p style="font-size:12px;color:var(--gray);margin-top:6px;">HR面談インテリジェンス・プラットフォーム</p>
+  </div>
+  <div class="footer-info">
+    TrustLinkPartner株式会社<br>
+    <a href="https://www.trust-link-ptnr.com/" style="color:var(--gray);text-decoration:none;" target="_blank">www.trust-link-ptnr.com</a><br>
+    <a href="mailto:info@trust-link-ptnr.com" style="color:var(--gray);text-decoration:none;">info@trust-link-ptnr.com</a>
+  </div>
+  <p class="footer-copy">© 2026 TrustLinkPartner株式会社 All Rights Reserved.</p>
+</footer>
+
+<script>
+const reveals = document.querySelectorAll('.reveal');
+const obs = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
+},{threshold:0.1});
+reveals.forEach(r => obs.observe(r));
+</script>
+</body>
+</html>
